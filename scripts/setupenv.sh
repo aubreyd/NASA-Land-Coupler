@@ -6,6 +6,7 @@ find_system () {
   source /etc/os-release
   case ${sysname} in
     discover*) echo "$sysname-$VERSION_ID" ;;
+    derecho*|dec) echo "derecho" ;;
     *) echo "$sysname" ;;
   esac
 }
@@ -20,6 +21,13 @@ auto_environment () {
       CPPERNODE="${CPPERNODE:-36}"
       DATA_ROOT="${DATA_ROOT:-/glade/p/ral/hap/drosen/projects/LISHydro/data}"
       source "${2}/cheyenne/intel-19.1.1";;
+    "derecho")
+      COMPILER="${COMPILER:-intel}"
+      COMPILER_VERS="${COMPILER_VERS:-intel-2023.0.0}"
+      BATCH_SYS="${BATCH_SYS:-qsub}"
+      CPPERNODE="${CPPERNODE:-128}"
+      DATA_ROOT="${DATA_ROOT:-}"
+      source "${2}/derecho/intel-2023.0.0";;
     "discover-12.5")
       source /etc/profile.d/modules.sh
       COMPILER="${COMPILER:-intel}"

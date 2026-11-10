@@ -27,6 +27,8 @@ usage () {
   printf "      'relWithDebInfo'\n"
   printf "  --install-dir=INSTALL_DIR\n"
   printf "      installation prefix\n"
+  printf "  --cmake-args=\"ARG1 ARG2...\"\n"
+  printf "      additional arguments passed to cmake\n"
   printf "  --verbose, -v\n"
   printf "      build with verbose output\n"
   printf "  --test, -t\n"
@@ -46,6 +48,7 @@ settings () {
   printf "  SYSTEM=${SYSTEM}\n"
   printf "  ENV_AUTO=${ENV_AUTO}\n"
   if [ ! -z "${COMPONENTS}" ]; then printf "  COMPONENTS=${COMPONENTS}\n"; fi
+  if [ ! -z "${CMAKE_ARGS}" ]; then printf "  CMAKE_ARGS=${CMAKE_ARGS}\n"; fi
   printf "  CLEAN=${CLEAN}\n"
   printf "  CONTINUE=${CONTINUE}\n"
   printf "  BUILD_TYPE=${BUILD_TYPE}\n"
@@ -62,6 +65,7 @@ SYSTEM=""
 ENV_DIR="${NLC_DIR}/env"
 ENV_AUTO=false
 COMPONENTS=""
+CMAKE_ARGS=""
 BUILD_TYPE="Release"
 CLEAN=false
 CONTINUE=false
@@ -81,6 +85,9 @@ while :; do
     --components=?*) COMPONENTS=${1#*=} ;;
     --components) printf "ERROR: $1 requires an argument.\n"; usage; exit 1 ;;
     --components=) printf "ERROR: $1 requires an argument.\n"; usage; exit 1 ;;
+    --cmake-args=?*) CMAKE_ARGS=${1#*=} ;;
+    --cmake-args) printf "ERROR: $1 requires an argument.\n"; usage; exit 1 ;;
+    --cmake-args=) printf "ERROR: $1 requires an argument.\n"; usage; exit 1 ;;
     --build-dir=?*) BUILD_DIR=${1#*=} ;;
     --build-dir) printf "ERROR: $1 requires an argument.\n"; usage; exit 1 ;;
     --build-dir=) printf "ERROR: $1 requires an argument.\n"; usage; exit 1 ;;
@@ -152,6 +159,10 @@ mkdir -p ${BUILD_DIR}
 CMAKE_SETTINGS="-DCMAKE_BUILD_TYPE=${BUILD_TYPE}"
 if [ ! -z "${COMPONENTS}" ]; then
   CMAKE_SETTINGS="${CMAKE_SETTINGS} -DCOMPONENT_LIST=${COMPONENTS}"
+fi
+
+if [ ! -z "${CMAKE_ARGS}" ]; then
+  CMAKE_SETTINGS="${CMAKE_SETTINGS} ${CMAKE_ARGS}"
 fi
 
 # make settings

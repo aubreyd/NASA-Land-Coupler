@@ -1,0 +1,80 @@
+#!/bin/bash
+# NASA Land Coupler environment for NCAR Derecho
+#   ncarenv/23.06, intel (ifort) 2023.0.0, cray-mpich 8.1.25
+#   (uses the MPI-enabled netcdf/hdf5 to match the esmf/8.5.0 build)
+#
+# Notes:
+#   - HDF-EOS2 is not provided on Derecho, so LIS_HDFEOS is left undefined.
+#   - The system HDF4 is static and requires -lsz -ltirpc, which the NLC
+#     CMake link does not provide, so LIS_HDF4 is left undefined.
+#   configure.sh disables HDF4/HDFEOS in LIS when these are undefined.
+
+# check for NASA Land Coupler source directory
+NLC_DIR="${NLC_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)}"
+export NLC_DIR=${NLC_DIR}
+if [ ! -d "${NLC_DIR}" ]; then
+  echo "ERROR: ${NLC_DIR} directory does not exist."
+  return 1 2>/dev/null || exit 1
+fi
+
+# load modules (module scripts are not 'set -u' safe)
+_nlc_shell_opts=$-
+set +u
+module --force purge
+module load ncarenv/23.06
+module load intel/2023.0.0
+module load ncarcompilers/1.0.0
+module load cray-mpich/8.1.25
+module load cmake/3.26.3
+module load hdf5-mpi/1.12.2
+module load netcdf-mpi/4.9.2
+module load eccodes/2.25.0
+module load parallel-netcdf/1.12.3
+module load parallelio/2.5.10
+module load esmf/8.5.0
+module load nccmp/1.9.0.1
+module list
+[[ "${_nlc_shell_opts}" == *u* ]] && set -u
+unset _nlc_shell_opts
+
+# libraries without modules (spack dependencies of the 23.06 stack)
+_nlc_spack=/glade/u/apps/derecho/23.06/spack/opt/spack
+_nlc_jasper=${_nlc_spack}/jasper/2.0.32/gcc/7.5.0/lycs
+
+# needed by LIS
+export LIS_ARCH="linux_ifc"
+export LIS_SPMD="parallel"
+export LIS_FC="mpif90"
+export LIS_CC="mpicc"
+export LIS_ECCODES="${NCAR_ROOT_ECCODES}"
+export LIS_JASPER="${_nlc_jasper}"
+export LIS_NETCDF="${NCAR_ROOT_NETCDF}"
+export LIS_HDF5="${NCAR_ROOT_HDF5}"
+export ESMFMKFILE="${ESMFMKFILE}"
+unset LIS_HDF4 LIS_HDFEOS LIS_OPENJPEG LIS_GRIBAPI
+# libesmf.so is underlinked (no NEEDED entries for pio, pnetcdf, mkl), so
+# have the ncarcompilers wrapper append ESMF's dependency libraries (from
+# esmf.mk) to every link line; MKL path matches the one ESMF was built with
+export NCAR_LDFLAGS_NLC_MKL="${_nlc_spack}/intel-oneapi-mkl/2023.1.0/oneapi/2023.0.0/wkex/mkl/2023.1.0/lib/intel64"
+export NCAR_LIBS_NLC_ESMF="$(sed -n 's/^ESMF_F90LINKLIBS=//p' "${ESMFMKFILE}")"
+# LIS needs zlib (normally linked via the HDF4 dependencies, disabled here)
+export NCAR_LDFLAGS_NLC_ZLIB="${_nlc_spack}/zlib/1.2.13/gcc/7.5.0/dw5e/lib"
+export NCAR_LIBS_NLC_ZLIB="-lz"
+export LIS_MODESMF="${NCAR_ROOT_ESMF}/include"
+export LIS_LIBESMF="${NCAR_ROOT_ESMF}/lib"
+
+# WRFHYDRO environment variables
+export NETCDF="${NCAR_ROOT_NETCDF}"
+export WRF_HYDRO="1"
+export WRF_HYDRO_NUOPC="1"
+export WRF_HYDRO_NUOPC_LSM="0"
+export WRF_HYDRO_NUDGING="0"
+export HYDRO_D="0"
+
+# NASA Land Coupler environment variables
+export CMAKE_C_COMPILER="mpicc"
+export CMAKE_CXX_COMPILER="mpicxx"
+export CMAKE_Fortran_COMPILER="mpif90"
+
+export LD_LIBRARY_PATH="${_nlc_jasper}/lib64:${NCAR_ROOT_ECCODES}/lib64:${LD_LIBRARY_PATH:-}"
+unset _nlc_spack _nlc_jasper

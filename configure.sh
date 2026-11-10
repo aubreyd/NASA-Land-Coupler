@@ -108,14 +108,25 @@ fi
 if [ "${INTERACTIVE}" = true ]; then
   ./configure; RC=$?
 else
+  # answers to LIS configure prompts (blank uses default)
+  #   parallelism, optimization, endian, grib, afwa, netcdf, netcdf version,
+  #   shuffle, deflate, deflate level, hdf4, hdf5, hdfeos
   case ${BUILD_TYPE} in
-    debug | DEBUG | Debug)
-      echo -ne '\n-2' | ./configure; RC=$?
-      ;;
-    *)
-      echo '' | ./configure; RC=$?
-      ;;
+    debug | DEBUG | Debug) LIS_OPT="-2" ;;
+    *) LIS_OPT="" ;;
   esac
+  # disable HDF4/HDFEOS when library paths are not provided
+  LIS_USE_HDF4=""; LIS_USE_HDFEOS=""
+  if [ -z "${LIS_HDF4:-}" ]; then
+    printf "\e[33mWARNING: LIS_HDF4 undefined, HDF4 will be disabled\e[0m\n"
+    LIS_USE_HDF4="0"
+  fi
+  if [ -z "${LIS_HDFEOS:-}" ] || [ "${LIS_USE_HDF4}" = "0" ]; then
+    printf "\e[33mWARNING: LIS_HDFEOS undefined, HDFEOS will be disabled\e[0m\n"
+    LIS_USE_HDFEOS="0"
+  fi
+  printf "\n%s\n\n\n\n\n\n\n\n\n%s\n\n%s\n" "${LIS_OPT}" \
+    "${LIS_USE_HDF4}" "${LIS_USE_HDFEOS}" | ./configure; RC=$?
 fi
 if [ ! -f "make/configure.lis" ]; then
   RC=1
