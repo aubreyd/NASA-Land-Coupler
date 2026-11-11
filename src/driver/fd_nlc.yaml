@@ -85,6 +85,26 @@ field_dictionary:
        canonical_units: W m-2
        description: land export (WRF-Hydro water temperature)
      #
+     - standard_name: lsm_forcing_specific_humidity
+       canonical_units: kg kg-1
+       description: land export (WRF-Hydro 1-D lake model)
+     #
+     - standard_name: lsm_forcing_surface_pressure
+       canonical_units: Pa
+       description: land export (WRF-Hydro 1-D lake model)
+     #
+     - standard_name: lsm_forcing_wind_speed
+       canonical_units: m s-1
+       description: land export (WRF-Hydro 1-D lake model)
+     #
+     - standard_name: lsm_forcing_downward_longwave
+       canonical_units: W m-2
+       description: land export (WRF-Hydro 1-D lake model)
+     #
+     - standard_name: lsm_forcing_precipitation_rate
+       canonical_units: kg m-2 s-1
+       description: land export (WRF-Hydro 1-D lake model)
+     #
      - standard_name: total_water_flux
        canonical_units: kg m-2 s-1
        description: land export

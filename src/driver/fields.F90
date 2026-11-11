@@ -40,7 +40,7 @@ module Fields
     character(len=64) :: standardName2 = "dummy2"
   end type med_fld_syn_type
 
-  type(med_fld_type),target,dimension(24) :: fldsFrLnd = (/&
+  type(med_fld_type),target,dimension(29) :: fldsFrLnd = (/&
     med_fld_type("bare_soil_evaporation"                   ,"edir"    ,&
                  "W m-2",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
     med_fld_type("liquid_fraction_of_soil_moisture_layer_1","smliqfracl1",&
@@ -88,6 +88,17 @@ module Fields
                  "K",FLD_REMAP_BILINR,FLD_MASK_NNE,288),&
     med_fld_type("lsm_forcing_downward_shortwave"          ,"swdown_cpl" ,&
                  "W m-2",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
+    ! forcing over lakes for the WRF-Hydro 1-D lake model
+    med_fld_type("lsm_forcing_specific_humidity"           ,"qair_cpl"   ,&
+                 "kg kg-1",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
+    med_fld_type("lsm_forcing_surface_pressure"            ,"psurf_cpl"  ,&
+                 "Pa",FLD_REMAP_BILINR,FLD_MASK_NNE,100000),&
+    med_fld_type("lsm_forcing_wind_speed"                  ,"wind_cpl"   ,&
+                 "m s-1",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
+    med_fld_type("lsm_forcing_downward_longwave"           ,"lwdown_cpl" ,&
+                 "W m-2",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
+    med_fld_type("lsm_forcing_precipitation_rate"          ,"prcp_cpl"   ,&
+                 "kg m-2 s-1",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
     med_fld_type("vegetation_transpiration"                ,"et"   ,&
                  "W m-2",FLD_REMAP_BILINR,FLD_MASK_NNE,0)/)
 
@@ -147,7 +158,7 @@ module Fields
     med_fld_type("surface_water_depth"                     ,"sfcheadrt_f",&
                  "mm",FLD_REMAP_BILINR,FLD_MASK_NNE,0)/)
 
-  type(med_fld_type),target,dimension(20) :: fldsToHyd = (/&
+  type(med_fld_type),target,dimension(25) :: fldsToHyd = (/&
     med_fld_type("liquid_fraction_of_soil_moisture"        ,"smliqfrac"  ,&
                  "-",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
     med_fld_type("liquid_fraction_of_soil_moisture_layer_1","smliqfracl1",&
@@ -187,6 +198,17 @@ module Fields
                  "K",FLD_REMAP_BILINR,FLD_MASK_NNE,288),&
     med_fld_type("lsm_forcing_downward_shortwave"          ,"swdown_cpl" ,&
                  "W m-2",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
+    ! forcing over lakes for the WRF-Hydro 1-D lake model
+    med_fld_type("lsm_forcing_specific_humidity"           ,"qair_cpl"   ,&
+                 "kg kg-1",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
+    med_fld_type("lsm_forcing_surface_pressure"            ,"psurf_cpl"  ,&
+                 "Pa",FLD_REMAP_BILINR,FLD_MASK_NNE,100000),&
+    med_fld_type("lsm_forcing_wind_speed"                  ,"wind_cpl"   ,&
+                 "m s-1",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
+    med_fld_type("lsm_forcing_downward_longwave"           ,"lwdown_cpl" ,&
+                 "W m-2",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
+    med_fld_type("lsm_forcing_precipitation_rate"          ,"prcp_cpl"   ,&
+                 "kg m-2 s-1",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
     med_fld_type("time_step_infiltration_excess"           ,"infxsrt"    ,&
                  "mm",FLD_REMAP_BILINR,FLD_MASK_WTR,0)/)
 
