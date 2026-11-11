@@ -78,13 +78,23 @@ endif (ENABLE_LIS)
 
 # link WFHYDRO
 if (ENABLE_WRFHYDRO)
+  # WRF-Hydro after v5.3.0 keeps its top-level CMakeLists.txt in the repository
+  # root (with src/ holding the code); older versions keep it in trunk/NDHMS
+  if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/wrf_hydro_nwm/src/CMakeLists.txt)
+    set(WRFHYDRO_CMAKE_DIR src/wrf_hydro_nwm)
+    # the land surface model is provided by the coupler (LIS), so do not
+    # build WRF-Hydro's own LSM and offline driver (empty would mean NoahMP)
+    set(HYDRO_LSM "None" CACHE STRING "Name of the Land Surface Model to Use")
+  else ()
+    set(WRFHYDRO_CMAKE_DIR src/wrf_hydro_nwm/trunk/NDHMS)
+  endif ()
   message("Build WRFHYDRO:")
-  message("   add_subdirectory: ${CMAKE_CURRENT_SOURCE_DIR}/src/wrf_hydro_nwm/trunk/NDHMS")
+  message("   add_subdirectory: ${CMAKE_CURRENT_SOURCE_DIR}/${WRFHYDRO_CMAKE_DIR}")
   message("")
-  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src/wrf_hydro_nwm/trunk/NDHMS)
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/${WRFHYDRO_CMAKE_DIR})
   add_dependencies(NLC.exe wrfhydro_nuopc)
   target_link_libraries(NLC.exe PUBLIC wrfhydro_nuopc)
-  target_include_directories(NLC.exe PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/src/wrf_hydro_nwm/trunk/NDHMS/mods>)
+  target_include_directories(NLC.exe PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/${WRFHYDRO_CMAKE_DIR}/mods>)
   list(APPEND nlc_defs_private NUOPCCAP_WRFHYDRO=WRFHydro_NUOPC)
 
   # link WRFHYDRO dependencies
