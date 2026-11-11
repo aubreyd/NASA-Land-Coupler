@@ -130,6 +130,12 @@ module Mediator
   real(ESMF_KIND_R8) :: dfltVal = 9.99e20_ESMF_KIND_R8
   type(ESMF_PoleMethod_Flag), parameter :: polemethod=ESMF_POLEMETHOD_ALLAVG
   type(ESMF_UnmappedAction_Flag), parameter :: unmappedaction=ESMF_UNMAPPEDACTION_IGNORE
+  ! extrapolation of unmapped destination points in bilinear regridding
+  ! (mediator attribute RemapExtrap: "none" (default) or "nearest").  With
+  ! "nearest", destination points outside the source grid (e.g. edge points of
+  ! coincident grids) and points next to masked source cells get the value of
+  ! the nearest unmasked source point instead of keeping the fill value.
+  type(ESMF_ExtrapMethod_Flag) :: extrapMethod = ESMF_EXTRAPMETHOD_NONE
   type(ESMF_Time)    :: time_invalidTimeStamp
   type(ESMF_Clock)   :: clock_invalidTimeStamp
   public SetServices
@@ -388,6 +394,23 @@ module Mediator
     if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
       line=__LINE__, file=__FILE__)) return  ! bail out
     is%wrap%LND%ensMap = value
+    call ESMF_AttributeGet(mediator, name="RemapExtrap", &
+      value=value, defaultValue="none", &
+      convention="NUOPC", purpose="Instance", rc=rc)
+    if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
+      line=__LINE__, file=__FILE__)) return  ! bail out
+    select case (trim(value))
+      case ("none", "NONE")
+        extrapMethod = ESMF_EXTRAPMETHOD_NONE
+      case ("nearest", "NEAREST")
+        extrapMethod = ESMF_EXTRAPMETHOD_NEAREST_STOD
+      case default
+        call ESMF_LogSetError(ESMF_RC_ARG_OUTOFRANGE, &
+          msg="RemapExtrap must be none or nearest: "//trim(value), &
+          line=__LINE__, file=__FILE__, rcToReturn=rc)
+        return
+    end select
+    call ESMF_LogWrite(trim(name)//": RemapExtrap="//trim(value), ESMF_LOGMSG_INFO)
     call ESMF_AttributeGet(mediator, name="RemapLND", &
       value=value, defaultValue="FLD_REMAP_REDIST", &
       convention="NUOPC", purpose="Instance", rc=rc)
@@ -2189,6 +2212,7 @@ module Mediator
             regridmethod=ESMF_REGRIDMETHOD_BILINEAR, &
             polemethod=polemethod, &
             unmappedaction=unmappedaction, &
+            extrapMethod=extrapMethod, &
             srcTermProcessing=srcTermProcessing_Value, &
             rc=rc)
           if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
@@ -2200,6 +2224,7 @@ module Mediator
             regridmethod=ESMF_REGRIDMETHOD_BILINEAR, &
             polemethod=polemethod, &
             unmappedaction=unmappedaction, &
+            extrapMethod=extrapMethod, &
             srcTermProcessing=srcTermProcessing_Value, &
             rc=rc)
           if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
@@ -2211,6 +2236,7 @@ module Mediator
             regridmethod=ESMF_REGRIDMETHOD_BILINEAR, &
             polemethod=polemethod, &
             unmappedaction=unmappedaction, &
+            extrapMethod=extrapMethod, &
             srcTermProcessing=srcTermProcessing_Value, &
             rc=rc)
           if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
@@ -2221,6 +2247,7 @@ module Mediator
             regridmethod=ESMF_REGRIDMETHOD_BILINEAR, &
             polemethod=polemethod, &
             unmappedaction=unmappedaction, &
+            extrapMethod=extrapMethod, &
             srcTermProcessing=srcTermProcessing_Value, &
             rc=rc)
           if (ESMF_LogFoundError(rcToCheck=rc, msg=ESMF_LOGERR_PASSTHRU, &
