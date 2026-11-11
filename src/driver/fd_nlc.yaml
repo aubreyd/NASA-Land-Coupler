@@ -73,6 +73,18 @@ field_dictionary:
        canonical_units: mm
        description: land export
      #
+     - standard_name: temperature_of_infiltration_excess
+       canonical_units: K
+       description: land export (WRF-Hydro water temperature)
+     #
+     - standard_name: lsm_forcing_air_temperature
+       canonical_units: K
+       description: land export (WRF-Hydro water temperature)
+     #
+     - standard_name: lsm_forcing_downward_shortwave
+       canonical_units: W m-2
+       description: land export (WRF-Hydro water temperature)
+     #
      - standard_name: total_water_flux
        canonical_units: kg m-2 s-1
        description: land export

@@ -40,7 +40,7 @@ module Fields
     character(len=64) :: standardName2 = "dummy2"
   end type med_fld_syn_type
 
-  type(med_fld_type),target,dimension(21) :: fldsFrLnd = (/&
+  type(med_fld_type),target,dimension(24) :: fldsFrLnd = (/&
     med_fld_type("bare_soil_evaporation"                   ,"edir"    ,&
                  "W m-2",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
     med_fld_type("liquid_fraction_of_soil_moisture_layer_1","smliqfracl1",&
@@ -81,6 +81,13 @@ module Fields
                  "kg m-2 s-1",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
     med_fld_type("total_water_flux_layer_4"                ,"wtrflx4"    ,&
                  "kg m-2 s-1",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
+    ! WRF-Hydro water temperature model inputs
+    med_fld_type("temperature_of_infiltration_excess"      ,"infxsrttemp",&
+                 "K",FLD_REMAP_BILINR,FLD_MASK_NNE,288),&
+    med_fld_type("lsm_forcing_air_temperature"             ,"tair_cpl"   ,&
+                 "K",FLD_REMAP_BILINR,FLD_MASK_NNE,288),&
+    med_fld_type("lsm_forcing_downward_shortwave"          ,"swdown_cpl" ,&
+                 "W m-2",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
     med_fld_type("vegetation_transpiration"                ,"et"   ,&
                  "W m-2",FLD_REMAP_BILINR,FLD_MASK_NNE,0)/)
 
@@ -140,7 +147,7 @@ module Fields
     med_fld_type("surface_water_depth"                     ,"sfcheadrt_f",&
                  "mm",FLD_REMAP_BILINR,FLD_MASK_NNE,0)/)
 
-  type(med_fld_type),target,dimension(17) :: fldsToHyd = (/&
+  type(med_fld_type),target,dimension(20) :: fldsToHyd = (/&
     med_fld_type("liquid_fraction_of_soil_moisture"        ,"smliqfrac"  ,&
                  "-",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
     med_fld_type("liquid_fraction_of_soil_moisture_layer_1","smliqfracl1",&
@@ -173,6 +180,13 @@ module Fields
                  "K",FLD_REMAP_BILINR,FLD_MASK_NNE,288),&
     med_fld_type("soil_temperature_layer_4"                ,"soiltempl4" ,&
                  "K",FLD_REMAP_BILINR,FLD_MASK_NNE,288),&
+    ! WRF-Hydro water temperature model inputs
+    med_fld_type("temperature_of_infiltration_excess"      ,"infxsrttemp",&
+                 "K",FLD_REMAP_BILINR,FLD_MASK_NNE,288),&
+    med_fld_type("lsm_forcing_air_temperature"             ,"tair_cpl"   ,&
+                 "K",FLD_REMAP_BILINR,FLD_MASK_NNE,288),&
+    med_fld_type("lsm_forcing_downward_shortwave"          ,"swdown_cpl" ,&
+                 "W m-2",FLD_REMAP_BILINR,FLD_MASK_NNE,0),&
     med_fld_type("time_step_infiltration_excess"           ,"infxsrt"    ,&
                  "mm",FLD_REMAP_BILINR,FLD_MASK_WTR,0)/)
 
